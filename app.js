@@ -4,7 +4,6 @@ import cors from "cors";
 import multer from "multer";
 import path from "path";
 import cloudinary from "cloudinary";
-import { Server as SocketServer } from "socket.io"; // Importa el módulo 'Server' de 'socket.io'
 import "./src/config/dbConfig.js";
 import "./src/config/cloudinary.js";
 import commentModel from "./src/dao/models/comment.model.js";
@@ -88,8 +87,6 @@ app.post("/api/comments", async (req, res) => {
     );
 
     // Emitir el evento 'newComment' a todos los clientes conectados
-    io.emit("newComment", comment);
-
     res.json(comment);
   } catch (error) {
     console.error("Error al agregar el comentario", error);
@@ -101,7 +98,25 @@ app.get("/api/posts/:postId/comments", async (req, res) => {
   const { postId } = req.params;
   try {
     const comments = await commentModel.find({ postId });
-    res.json(comments);
+
+    if (comments.length > 0) {
+      res.json(comments);
+    } else {
+      // Mantener la solicitud abierta hasta que haya nuevos comentarios o hasta que expire un tiempo de espera
+      const timeout = setTimeout(() => {
+        res.json([]);
+      }, 30000); // 30 segundos de tiempo de espera
+
+      const interval = setInterval(async () => {
+        const newComments = await commentModel.find({ postId });
+
+        if (newComments.length > comments.length) {
+          clearTimeout(timeout);
+          clearInterval(interval);
+          res.json(newComments);
+        }
+      }, 1000); // Consultar nuevos comentarios cada segundo
+    }
   } catch (err) {
     console.error("Error al obtener los comentarios", err);
     res.status(500).json({ error: "Error al obtener los comentarios" });
@@ -114,8 +129,6 @@ app.get("/api/posts", async (req, res) => {
 });
 
 // Iniciar el servidor
-const server = app.listen(port, () => {
+app.listen(port, () => {
   console.log(`Servidor escuchando en http://localhost:${port}`);
 });
-
-const io = new SocketServer(server);
