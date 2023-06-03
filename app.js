@@ -3,13 +3,17 @@ import mongoose from "mongoose";
 import cors from "cors";
 import multer from "multer";
 import path from "path";
-import cloudinary from 'cloudinary'
+import cloudinary from "cloudinary";
+import http from "http"; // Importa el módulo 'http' de Node.js
+import { Server as SocketServer } from "socket.io"; // Importa el módulo 'Server' de 'socket.io'
 import "./src/config/dbConfig.js";
 import "./src/config/cloudinary.js";
 import commentModel from "./src/dao/models/comment.model.js";
 
 const app = express();
 const port = 8080;
+const server = http.createServer(app);
+const io = new SocketServer(server);
 
 app.use(cors());
 
@@ -78,22 +82,37 @@ app.post("/api/upload", upload.single("image"), (req, res) => {
 app.post("/api/comments", async (req, res) => {
   const { postId, text } = req.body;
 
-  const comment = await commentModel.create({ text });
+  try {
+    const comment = await commentModel.create({ postId, text });
+    await postModel.findByIdAndUpdate(
+      postId,
+      { $push: { comments: comment } },
+      { new: true }
+    );
 
-  comment
-    .save()
-    .then((newComment) => {
-      res.json(newComment);
-    })
-    .catch((error) => {
-      console.error("Error al crear el comentario", error);
-      res.status(500).json({ error: "Error al crear el comentario" });
-    });
+    // Emitir el evento 'newComment' a todos los clientes conectados
+    io.emit("newComment", comment);
+
+    res.json(comment);
+  } catch (error) {
+    console.error("Error al agregar el comentario", error);
+    res.status(500).json({ error: "Error al agregar el comentario" });
+  }
+});
+
+app.get("/api/posts/:postId/comments", async (req, res) => {
+  const { postId } = req.params;
+  try {
+    const comments = await commentModel.find({ postId });
+    res.json(comments);
+  } catch (err) {
+    console.error("Error al obtener los comentarios", err);
+    res.status(500).json({ error: "Error al obtener los comentarios" });
+  }
 });
 
 app.get("/api/posts", async (req, res) => {
   const posts = await postModel.find();
-  console.log(posts);
   res.json(posts);
 });
 
