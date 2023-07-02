@@ -1,65 +1,25 @@
 import { Router } from "express";
-import cloudinary from "cloudinary";
-import postModel from "../dao/models/post.model.js";
+import { deletePost, editPost, filterPosts, findPost, getPosts, mostViews, savePost } from "../controller/post.controller.js";
 
 const router = new Router();
 
-router.get("/", async (req, res) => {
-  const posts = await postModel.find();
-  res.json(posts);
-});
+// GET api/posts
+router.get("/", getPosts);
 
-router.get("/:id", async (req, res) => {
-  try {
-    const posts = await postModel.findById(req.params.id);
-    res.json(posts);
-  } catch (err) {
-    console.log(err);
-  }
-});
+router.post("/filter", filterPosts);
 
-// Ruta para guardar una nueva publicación
-router.post("/", async (req, res) => {
-  const content = req.body;
-  console.log(content);
+router.post("/views", mostViews);
 
-  try {
-    await postModel.create(content);
-    console.log("Publicación guardada en la base de datos");
-    res.status(201).json({ message: "Publicación guardada" });
-  } catch (err) {
-    console.error("Error al guardar la publicación", err);
-    res.status(500).json({ error: "Error al guardar la publicación" });
-  }
-});
+// GET api/posts/:id
+router.get("/:id", findPost);
+
 // POST api/posts
-router.post("/upload", (req, res) => {
-  if (!req.files || Object.keys(req.files).length === 0) {
-    res.status(400).json({ error: "No se ha proporcionado ninguna imagen" });
-  } else {
-    const imageFile = req.files.image;
+router.post("/", savePost);
 
-    const imagePath = `uploads/${imageFile.name}`;
+// PUT api/posts/:id
+router.put("/:id", editPost);
 
-    imageFile.mv(imagePath, async (error) => {
-      if (error) {
-        console.error("Error al guardar la imagen", error);
-        res.status(500).json({ error: "Error al guardar la imagen" });
-      } else {
-        try {
-          const cloudinaryResult = await cloudinary.uploader.upload(imagePath, {
-            folder: "geografia",
-          });
-          const imageUrl = cloudinaryResult.secure_url;
-
-          res.status(200).json({ imageUrl: imageUrl }); // Asegúrate de devolver la URL en la respuesta
-        } catch (error) {
-          console.error("Error al subir la imagen a Cloudinary", error);
-          res.status(500).json({ error: "Error al subir la imagen" });
-        }
-      }
-    });
-  }
-});
+// DELETE api/posts/:id
+router.delete("/:id", deletePost);
 
 export default router;

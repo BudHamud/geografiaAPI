@@ -23,6 +23,9 @@ dependencies:
   mongoose:
     specifier: ^7.2.2
     version: 7.2.2
+  mongoose-paginate-v2:
+    specifier: ^1.7.1
+    version: 1.7.1
   multer:
     specifier: 1.4.5-lts.1
     version: 1.4.5-lts.1
@@ -836,6 +839,11 @@ packages:
       socks: 2.7.1
     optionalDependencies:
       saslprep: 1.0.3
+    dev: false
+
+  /mongoose-paginate-v2@1.7.1:
+    resolution: {integrity: sha512-J8DJw3zRXcXOKoZv+RvO9tt5HotRnbo2iCR3lke+TtsQsYwQvbY3EgUkPqZXw6qCX2IByvXrW5SGNdAB0od/Cw==}
+    engines: {node: '>=4.0.0'}
     dev: false
 
   /mongoose@7.2.2:

@@ -12,4 +12,10 @@ const storage = multer.diskStorage({
   },
 });
 
+export const extractPublicIdFromUrl = (url) => {
+  const startIndex = url.lastIndexOf("/") + 1;
+  const endIndex = url.lastIndexOf(".");
+  return url.substring(startIndex, endIndex);
+}
+
 export const upload = multer({ storage });

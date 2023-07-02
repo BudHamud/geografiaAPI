@@ -6,6 +6,7 @@ export const config = {
   cloudName: process.env.CLOUD_NAME,
   cloudKey: process.env.CLOUD_API_KEY,
   cloudSecret: process.env.CLOUD_SECRET,
+  cloudflareUrl: process.env.CLOUDFLARE_URL,
   mongoURI: process.env.MONGO_URL
 };
 
