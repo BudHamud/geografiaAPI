@@ -2,7 +2,7 @@ import { Router } from "express";
 import userModel from "../dao/models/user.model.js";
 import { comparePasswords, generateToken, hashPassword } from "../utils.js";
 import config from "../config/config.js";
-import jwt from 'jsonwebtoken'
+import jwt from "jsonwebtoken";
 
 const router = new Router();
 
@@ -17,7 +17,7 @@ router.post("/login", async (req, res) => {
       const token = generateToken(user);
       return res.json({ token: token, message: "Sesión iniciada con exito" });
     } else {
-        return res.json({ message: "Usuario o contraseña inválida" })
+      return res.json({ message: "Usuario o contraseña inválida" });
     }
   }
 
