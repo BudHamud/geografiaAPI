@@ -3,6 +3,7 @@ import cors from "cors";
 import fileUpload from 'express-fileupload'
 import posts from './src/routes/post.router.js'
 import imgs from './src/routes/img.router.js'
+import user from './src/routes/auth.router.js'
 import "./src/config/dbConfig.js";
 import "./src/config/cloudinary.js";
 
@@ -16,6 +17,7 @@ app.use(fileUpload());
 
 app.use('/api/posts', posts)
 app.use('/api/img', imgs)
+app.use('/api/user', user)
 
 // Iniciar el servidor
 app.listen(port, () => {

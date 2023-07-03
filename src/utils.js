@@ -1,5 +1,8 @@
 import multer from "multer";
 import path from "path";
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import config from './config/config.js'
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -12,10 +15,28 @@ const storage = multer.diskStorage({
   },
 });
 
+export const upload = multer({ storage });
+
 export const extractPublicIdFromUrl = (url) => {
   const startIndex = url.lastIndexOf("/") + 1;
   const endIndex = url.lastIndexOf(".");
   return url.substring(startIndex, endIndex);
 }
 
-export const upload = multer({ storage });
+export const hashPassword = async (password) => {
+  return bcrypt.hash(password, 10);
+};
+
+export const comparePasswords = async (password, hashedPassword) => {
+  return bcrypt.compare(password, hashedPassword);
+};
+
+export const generateToken = (user) => {
+  const payload = {
+    id: user.id,
+    email: user.email,
+    role: user.role,
+  };
+  const token = jwt.sign(payload, config.secretJwt, { expiresIn: '1h' });
+  return token;
+};

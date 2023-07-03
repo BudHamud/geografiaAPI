@@ -8,14 +8,33 @@ class PostService {
         limit,
         page: Number(page),
       };
-      console.log(options);
+
       const searchQuery = { title: { $regex: search, $options: "i" } };
   
       const searchResults = await postModel.paginate(searchQuery, options);
-      return searchResults;
+      const views = await this.getViews()
+
+      console.log({ ...searchResults, views: views.docs });
+      return { ...searchResults, views: views.docs };
     } catch (error) {
       console.error(`Error obteniendo /posts: ${error}`);
       return [];
+    }
+  }
+
+  async getViews() {
+    try {
+      const options = {
+        sort: { views: -1 },
+        limit: 4,
+        page: 1,
+      };
+
+      const searchResults = await postModel.paginate({}, options);
+
+      return searchResults
+    } catch (err) {
+      console.error('Error al cargar mostViews' ,err)
     }
   }
 
