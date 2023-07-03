@@ -14,7 +14,6 @@ class PostService {
       const searchResults = await postModel.paginate(searchQuery, options);
       const views = await this.getViews()
 
-      console.log({ ...searchResults, views: views.docs });
       return { ...searchResults, views: views.docs };
     } catch (error) {
       console.error(`Error obteniendo /posts: ${error}`);
@@ -49,13 +48,19 @@ class PostService {
   }
 
   async editPost(id, data) {
-    const { content, title, thumbnail, views } = data;
+    const { content, title, thumbnail } = data;
     const post = await postModel.findById(id);
     post.content = content;
     post.title = title;
     post.thumbnail = thumbnail;
-    post.views = views
-    post.save();
+    await post.save();
+  }
+
+  async addView(id) {
+    const post = await postModel.findById(id)
+    post.views = post.views + 1
+    await post.save()
+    return true
   }
 
   async deletePost(id) {

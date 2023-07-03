@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { deletePost, editPost, filterPosts, findPost, getPosts, mostViews, savePost } from "../controller/post.controller.js";
+import { addView, deletePost, editPost, filterPosts, findPost, getPosts, savePost } from "../controller/post.controller.js";
 
 const router = new Router();
 
@@ -8,7 +8,7 @@ router.get("/", getPosts);
 
 router.post("/filter", filterPosts);
 
-router.post("/views", mostViews);
+router.post("/views/:id", addView);
 
 // GET api/posts/:id
 router.get("/:id", findPost);

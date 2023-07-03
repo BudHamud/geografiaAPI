@@ -2,6 +2,7 @@ import { Router } from "express";
 import userModel from "../dao/models/user.model.js";
 import { comparePasswords, generateToken, hashPassword } from "../utils.js";
 import config from "../config/config.js";
+import jwt from 'jsonwebtoken'
 
 const router = new Router();
 
@@ -11,7 +12,7 @@ router.post("/login", async (req, res) => {
   const user = await userModel.findOne({ username: username });
   if (user) {
     const passwordMatch = await comparePasswords(password, user.password);
-    console.log(passwordMatch);
+
     if (passwordMatch) {
       const token = generateToken(user);
       return res.json({ token: token, message: "Sesión iniciada con exito" });
@@ -20,7 +21,7 @@ router.post("/login", async (req, res) => {
     }
   }
 
-  return res.status(401).json({ error: "Usuario o contraseña inválida" });
+  return res.json({ error: "Usuario o contraseña inválida" });
 });
 
 router.post("/register", async (req, res) => {

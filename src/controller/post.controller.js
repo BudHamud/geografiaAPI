@@ -13,14 +13,14 @@ export const getPosts = async (req, res) => {
 export const filterPosts = async (req, res) => {
   const { search, filter, page, limit } = req.body;
 
-  const posts = await ps.getPosts(search, filter, 'createdAt', page, limit);
+  const posts = await ps.getPosts(search, filter, "createdAt", page, limit);
   res.json(posts);
 };
 
 export const mostViews = async (req, res) => {
   const { search, filter, page, limit } = req.body;
 
-  const posts = await ps.getPosts(search, filter, 'views', page, limit);
+  const posts = await ps.getPosts(search, filter, "views", page, limit);
   res.json(posts);
 };
 
@@ -65,6 +65,22 @@ export const deletePost = async (req, res) => {
     res.status(200).json({ message: "Publicacion borrada", post: post });
   } catch (err) {
     console.error("Error al borrar la publicación", err);
+  }
+};
+
+export const addView = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const post = await ps.addView(id);
+    console.log(post);
+    if (post) {
+      res.status(200).json({ message: "Visita agregada con exito" });
+    } else {
+      res.status(400).json({ message: "No pude ser agregada la visita" });
+    }
+  } catch (err) {
+    console.error("Error en addView", err);
   }
 };
 
