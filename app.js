@@ -6,12 +6,15 @@ import imgs from './src/routes/img.router.js'
 import user from './src/routes/auth.router.js'
 import "./src/config/dbConfig.js";
 import "./src/config/cloudinary.js";
+import config from "./src/config/config.js";
 
 const app = express();
 const port = 8080;
 
 // Configurar middleware para manejar el cuerpo de la solicitud como JSON
-app.use(cors());
+app.use(cors({
+  origin: config.frontUrl
+}));
 app.use(express.json());
 app.use(fileUpload());
 

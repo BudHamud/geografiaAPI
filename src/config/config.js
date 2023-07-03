@@ -2,6 +2,7 @@ import "dotenv/config";
 
 export const config = {
   url: process.env.URL || 'http://localhost:',
+  frontUrl: process.env.URL_FRONT,
   port: process.env.PORT || 8080,
   secretJwt: process.env.SECRET_JWT,
   cloudName: process.env.CLOUD_NAME,
