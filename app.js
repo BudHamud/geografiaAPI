@@ -12,9 +12,7 @@ const app = express();
 const port = 8080;
 
 // Configurar middleware para manejar el cuerpo de la solicitud como JSON
-app.use(cors({
-  origin: config.frontUrl
-}));
+app.use(cors({ origin: true }));
 app.use(express.json());
 app.use(fileUpload());
 
